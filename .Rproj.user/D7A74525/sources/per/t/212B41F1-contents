@@ -1,0 +1,60 @@
+---
+title: "gtsummary"
+output: html_notebook
+---
+```{r setup}
+library(tidyverse)
+library(gtsummary)
+```
+
+```{r data import}
+draco_ecomorph <- read_csv("draco_ecomorph.csv")
+```
+
+```{r make the table}
+#this function works best with datasets without NA values
+
+table_Draco <- draco_ecomorph %>%
+  select(species, sex, snout_vent_length_mm, perch_height_cm) %>% #only retain variables that will be used in summaries
+  filter(species %in% c("bimaculatus", "cornutus", "melanopogon")) %>%
+  tbl_summary(by = species,
+              missing = "no", # remove missing values (NAs). "ifany" will include a missing values summary row in table.
+              digits = all_continuous() ~ 1, #number of displayed digits for continuous variables
+              label = list(snout_vent_length_mm ~ "SVL (mm)", #change column labels in table
+                           perch_height_cm ~ "Perch Height (cm)",
+                           sex ~ "Sex"),
+              statistic = list(all_continuous() ~ "{mean} ({sd})", #can use any character for parentheses
+                               all_categorical() ~ "{n}")) %>%
+add_p(pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% #number of digits displayed for p-values
+  modify_caption("Table 1. Lizard Characteristics") %>%
+  #modify_header(update = all_stat_cols() ~ "**{level}**") %>% #headers to only contain species name
+  modify_header(update = list(
+  label ~ '',
+  stat_1 ~ '**D. bimaculatus**',
+  stat_2 ~ '**D. cornutus**',
+  stat_3 ~ '**D. melanopogon**',
+  p.value ~ '**p-value**'
+))
+
+#show_header_names(table_Draco) #lets you preview code for changing header names and formatting  
+                
+table_Draco
+```
+```{r save table}
+table_Draco %>% 
+  as_gt() %>%   # convert to gt table for additional formatting options and saving
+  #gt::opt_align_table_header(align = "left")
+  gt::gtsave(filename = "draco_ecomorph_table.pdf") #save file
+```
+If data have missing values that make groups unbalanced, might have to make more than one table and combine them.
+Parts of a gt table: https://gt.rstudio.com/articles/intro-creating-gt-tables.html
+
+Advanced Customization
+
+It's natural a {gtsummary} package user would want to customize the aesthetics of the table with one or more of the many {gt} functions available.
+
+Every function in {gt} is available to use with a {gtsummary} object.
+
+1. Create a {gtsummary} table.
+2. Convert the table to a {gt} object with the as_gt() function.
+3. Continue formatting as a {gt} table with any {gt} function.

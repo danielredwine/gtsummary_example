@@ -1,0 +1,20 @@
+"0","draco_ecomorph <- read_csv(""draco_ecomorph.csv"")"
+"1","
+[36m──[39m [1m[1mColumn specification[1m[22m [36m──────────────────────────────────────────────────────────────────────────────────────────────────────[39m
+cols(
+  id = [31mcol_character()[39m,
+  species = [31mcol_character()[39m,
+  sex = [31mcol_character()[39m,
+  location = [31mcol_character()[39m,
+  snout_vent_length_mm = [32mcol_double()[39m,
+  tail_length_mm = [32mcol_double()[39m,
+  fore_limb_length_mm = [32mcol_double()[39m,
+  fore_toe_length_mm = [32mcol_double()[39m,
+  hind_limb_length_mm = [32mcol_double()[39m,
+  hind_toe_length_mm = [32mcol_double()[39m,
+  perch_height_cm = [32mcol_double()[39m,
+  perch_circumference_cm = [32mcol_double()[39m,
+  temperature_degreesC = [32mcol_double()[39m
+)
+
+"

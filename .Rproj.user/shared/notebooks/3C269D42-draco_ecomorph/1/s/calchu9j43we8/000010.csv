@@ -1,0 +1,4 @@
+"0","table_Draco %>% "
+"0","  as_gt() %>%             # convert to gt table for additional formatting options and saving"
+"0","  #gt::opt_align_table_header(align = ""left"")"
+"0","  gt::gtsave(filename = ""draco_ecomorph_table.pdf"") #save file"
