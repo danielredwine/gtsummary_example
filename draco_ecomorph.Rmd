@@ -18,10 +18,10 @@ draco_ecomorph <- read_csv("draco_ecomorph.csv")
 #this function works best with datasets without NA values
 
 table_Draco <- draco_ecomorph %>%
-  select(species, sex, snout_vent_length_mm, perch_height_cm) %>% #only retain variables that will be used in summaries
+  select(species, sex, snout_vent_length_mm, perch_height_cm) %>% #retain variables used in summaries
   filter(species %in% c("bimaculatus", "cornutus", "melanopogon")) %>%
   tbl_summary(by = species,
-              missing = "no", # remove missing values (NAs). "ifany" will include a missing values summary row in table.
+              missing = "no", # remove missing values (NAs). "ifany" will include a missing values row in table.
               digits = all_continuous() ~ 1, #number of displayed digits for continuous variables
               label = list(snout_vent_length_mm ~ "SVL (mm)", #change column labels in table
                            perch_height_cm ~ "Perch Height (cm)",
