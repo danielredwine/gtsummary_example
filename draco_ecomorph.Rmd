@@ -26,7 +26,7 @@ table_Draco <- draco_ecomorph %>%
                            perch_height_cm ~ "Perch Height (cm)",
                            sex ~ "Sex"),
               statistic = list(all_continuous() ~ "{mean} ({sd})", #can use any character for parentheses
-                               all_categorical() ~ "{n}")) %>%
+                               all_categorical() ~ "{n}")) %>% #count obs. for categorical variables
 add_p(pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% #number of digits displayed for p-values
   modify_caption("Table 1. Lizard and Habitat Characteristics") %>%
   #modify_header(update = all_stat_cols() ~ "**{level}**") %>% #headers to only contain species name
@@ -45,9 +45,9 @@ table_Draco
 ```
 ```{r save table}
 table_Draco %>% 
-  as_gt() %>%   # convert to gt table for additional formatting options and saving
+  as_gt()   # convert to gt table for additional formatting options and saving
   #gt::opt_align_table_header(align = "left")
-  gt::gtsave(filename = "draco_ecomorph_table.pdf") #save file
+  #gt::gtsave(filename = "draco_ecomorph_table.pdf") #save file
 ```
 If data have missing values that make groups unbalanced, might have to make more than one table and combine them.
 Parts of a gt table: https://gt.rstudio.com/articles/intro-creating-gt-tables.html
