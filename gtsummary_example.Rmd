@@ -45,10 +45,9 @@ add_p(pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% #number of digits displaye
 table_Draco1
 ```
 ```{r save table}
-table_Draco1 %>% 
-  as_gt() %>%   # convert to gt table for additional formatting options and saving
-  gt::opt_align_table_header(align = "left") %>%
-  gt::gtsave(filename = "draco_ecomorph_table.pdf") #save file
+#table_Draco1 %>% 
+  #as_gt() %>%   # convert to gt table for additional formatting options and saving
+  #gt::gtsave(filename = "draco_ecomorph_table.pdf") #save file
 ```
 If data have missing values that make groups unbalanced, might have to make more than one table and combine them.
 Parts of a gt table: https://gt.rstudio.com/articles/intro-creating-gt-tables.html
@@ -83,10 +82,11 @@ add_p(pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% #number of digits displaye
   modify_header(update = all_stat_cols() ~ "**{level}**") %>% #headers to only contain species name
   as_gt() %>% #have to convert to gt object for some types of formatting
   gt::tab_options(heading.align = "left") #can't get to work; most journals want table caption separate anyway
+#table caption appears left aligned after it is knit to html.
 
 table_penguins
 ```
-If more formatting is required, likely have to convert gtsummary object to a gt() object and modify via commands in `gt` package.
+If more formatting is required, likely have to convert `gtsummary` object to a `gt` object and modify with `gt` package.
 
 Other worked examples:
 https://cran.r-project.org/web/packages/gtsummary/vignettes/gallery.html
