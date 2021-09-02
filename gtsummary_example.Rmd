@@ -7,16 +7,17 @@ output:
 ```{r setup, warning = FALSE, message = FALSE}
 library(tidyverse)
 library(gtsummary)
+library(palmerpenguins)
 ```
 
 ```{r data import, message=FALSE, warning=FALSE, include=FALSE}
-draco_ecomorph <- read_csv("draco_ecomorph.csv")
+draco_ecomorph1 <- read_csv("draco_ecomorph.csv")
 ```
 
-```{r make the table}
+```{r example 1 make the table}
 #this function works best with datasets without NA values
 
-table_Draco <- draco_ecomorph %>%
+table_Draco1 <- draco_ecomorph1 %>%
   select(species, sex, snout_vent_length_mm, perch_height_cm) %>% #retain variables used in summaries
   filter(species %in% c("bimaculatus", "cornutus", "melanopogon")) %>%
   tbl_summary(by = species,
@@ -35,19 +36,19 @@ add_p(pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% #number of digits displaye
   stat_1 ~ '**D. bimaculatus**',
   stat_2 ~ '**D. cornutus**',
   stat_3 ~ '**D. melanopogon**',
-  p.value ~ '**p-value**'
+  p.value ~ '**P-value**'
 ))
 
 #show_header_names(table_Draco) 
 #lets you preview code for changing header names and formatting  
                 
-table_Draco
+table_Draco1
 ```
 ```{r save table}
-#table_Draco %>% 
-  #as_gt() %>%   # convert to gt table for additional formatting options and saving
-  #gt::opt_align_table_header(align = "left")
-  #gt::gtsave(filename = "draco_ecomorph_table.pdf") #save file
+table_Draco1 %>% 
+  as_gt() %>%   # convert to gt table for additional formatting options and saving
+  gt::opt_align_table_header(align = "left") %>%
+  gt::gtsave(filename = "draco_ecomorph_table.pdf") #save file
 ```
 If data have missing values that make groups unbalanced, might have to make more than one table and combine them.
 Parts of a gt table: https://gt.rstudio.com/articles/intro-creating-gt-tables.html
@@ -61,3 +62,33 @@ Every function in {gt} is available to use with a {gtsummary} object.
 1. Create a {gtsummary} table.
 2. Convert the table to a {gt} object with the as_gt() function.
 3. Continue formatting as a {gt} table with any {gt} function.
+
+**Example 2**
+```{r palmer penguins data}
+table_penguins <- penguins %>%
+  select(species, sex, bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g) %>% #retain variables used in summaries
+  #filter(species %in% c("bimaculatus", "cornutus", "melanopogon")) %>%
+  tbl_summary(by = species,
+              missing = "no", # remove missing values (NAs). "ifany" will include a missing values row in table.
+              digits = all_continuous() ~ 1, #number of displayed digits for continuous variables
+              label = list(bill_length_mm ~ "Bill Length (mm)", #change column labels in table
+                           bill_depth_mm ~ "Bill Depth (mm)",
+                           flipper_length_mm ~ "Flipper Length (mm)",
+                           body_mass_g ~ "Body Mass (g)",
+                           sex ~ "Sex"),
+              statistic = list(all_continuous() ~ "{mean} ({sd})", #can use any character for parentheses
+                               all_categorical() ~ "{n}")) %>% #count obs. for categorical variables
+add_p(pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% #number of digits displayed for p-values
+  modify_caption("Table 2. Palmer Penguin Morphometrics") %>%
+  modify_header(update = all_stat_cols() ~ "**{level}**") %>% #headers to only contain species name
+  as_gt() %>% #have to convert to gt object for some types of formatting
+  gt::tab_options(heading.align = "left") #can't get to work; most journals want table caption separate anyway
+
+table_penguins
+```
+If more formatting is required, likely have to convert gtsummary object to a gt() object and modify via commands in `gt` package.
+
+Other worked examples:
+https://cran.r-project.org/web/packages/gtsummary/vignettes/gallery.html
+
+
