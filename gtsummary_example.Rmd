@@ -10,7 +10,7 @@ library(gtsummary)
 library(palmerpenguins)
 ```
 **Example 1**
-```{r data import, message=FALSE, warning=FALSE, include=FALSE}
+```{r data import, message=FALSE, warning=FALSE}
 draco_ecomorph1 <- read_csv("draco_ecomorph.csv")
 ```
 
