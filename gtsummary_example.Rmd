@@ -9,7 +9,9 @@ library(tidyverse)
 library(gtsummary)
 library(palmerpenguins)
 ```
+
 **Example 1**
+
 ```{r data import, message=FALSE, warning=FALSE}
 draco_ecomorph1 <- read_csv("draco_ecomorph.csv")
 ```
@@ -28,7 +30,8 @@ table_Draco1 <- draco_ecomorph1 %>%
                            sex ~ "Sex"),
               statistic = list(all_continuous() ~ "{mean} ({sd})", #can use any character for parentheses
                                all_categorical() ~ "{n}")) %>% #count obs. for categorical variables
-add_p(pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% #number of digits displayed for p-values
+  #add_p(snout_vent_length_mm ~ "aov") %>% CANT FIGURE OUT HOW TO FORCE ANOVA
+  add_p(pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% #number of digits displayed for p-values
   modify_caption("Table 1. Lizard and Habitat Characteristics") %>%
   #modify_header(update = all_stat_cols() ~ "**{level}**") %>% #headers to only contain species name
   modify_header(update = list(
@@ -44,7 +47,8 @@ add_p(pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% #number of digits displaye
                 
 table_Draco1
 ```
-```{r save table}
+
+```{r save Draco table}
 #table_Draco1 %>% 
   #as_gt() %>%   # convert to gt table for additional formatting options and saving
   #gt::gtsave(filename = "draco_ecomorph_table.pdf") #save file
@@ -63,6 +67,7 @@ Every function in {gt} is available to use with a {gtsummary} object.
 3. Continue formatting as a {gt} table with any {gt} function.
 
 **Example 2**
+
 ```{r palmer penguins data}
 table_penguins <- penguins %>%
   select(species, sex, bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g) %>% #retain variables used in summaries
@@ -76,7 +81,7 @@ table_penguins <- penguins %>%
                            sex ~ "Sex"),
               statistic = list(all_continuous() ~ "{mean} ({sd})", #can use any character for parentheses
                                all_categorical() ~ "{n}")) %>% #count obs. for categorical variables
-add_p(pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% #number of digits displayed for p-values
+  add_p(pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% #number of digits displayed for p-values
   modify_caption("Table 2. Palmer Penguin Morphometrics") %>%
   modify_header(update = all_stat_cols() ~ "**{level}**") %>% #headers to only contain species name
   as_gt() %>% #have to convert to gt object for some types of formatting

@@ -1,0 +1,66 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+library(gtsummary)
+library(palmerpenguins)
+library(tidyverse)
+theme_gtsummary_mean_sd()
+```
+
+```{r example}
+
+#https://stackoverflow.com/questions/68722812/is-it-possible-to-extract-the-full-output-for-the-statistical-tests-performed-in
+
+gtTable <- mtcars %>% 
+  select(cyl, mpg) %>% 
+  tbl_summary(by = cyl) %>% 
+  add_p()
+
+oneWay <- aov(mpg ~ cyl, data = mtcars)
+summary(oneWay)
+```
+
+
+
+```{r t test}
+tbl_summary(trial, by = trt) %>%
+  add_p(age ~ "t.test", test.args = age ~ list(var.equal = TRUE))
+```
+```{r ANOVA}
+tbl_summary(trial, by = trt) %>%
+  add_p(age ~ "aov")
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+```{r iris ANOVA}
+tbl_summary(iris, by = Species) %>%
+  add_p(Sepal.Length ~ "aov")
+#not sure why it includes all columns by default; use 'select' if you want fewer columns
+```
+
+```{r penguins ANOVA}
+#probably the most straight forward example
+
+birds <- penguins %>% select(species, bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g)
+
+tbl_summary(birds, by = species, missing = "no") %>%
+  add_p(all_continuous() ~ "aov") %>%
+  # add a header (which also unhides a hidden column)
+  # modify_header(statistic ~ "**Test Statistic**") %>%
+  # add a function to format the column
+  # modify_fmt_fun(statistic ~ style_sigfig)
+  add_q(method = "fdr")
+
+#there is still a bug in the suggested way to insert test statistics (commented out)
+#https://stackoverflow.com/questions/69606149/how-do-i-display-test-statistic-f-value-for-anova-using-tbl-summary
+```
+
+https://stackoverflow.com/questions/61605923/how-to-generate-t-value-f-value-or-chi-square-in-the-summary-table-using-r-pack
+
