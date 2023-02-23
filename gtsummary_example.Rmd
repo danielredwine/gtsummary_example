@@ -93,6 +93,9 @@ table_penguins
 If more formatting is required, likely have to convert `gtsummary` object to a `gt` object and modify with `gt` package.
 
 Other worked examples:
+
 https://cran.r-project.org/web/packages/gtsummary/vignettes/gallery.html
+
+https://www.pipinghotdata.com/posts/2021-07-14-polished-summary-tables-in-r-with-gtsummary/
 
 
