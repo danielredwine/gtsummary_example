@@ -39,19 +39,18 @@ table_Draco2 <- draco_ecomorph1 %>%
       tail_length_mm ~ "Tail Length (mm)",
       fore_limb_length_mm ~ "Forelimb Length (mm)",
       fore_toe_length_mm ~ "Foretoe Length (mm)",
-      perch_height_cm ~ "Perch Height (cm)",
-      sex ~ "Sex"
+      perch_height_cm ~ "Perch Height (cm)"
     ),
     statistic = list(all_continuous() ~ "{mean} ({sd})", #can use any character for parentheses
                      all_categorical() ~ "{n}")
   ) %>% #count obs. for categorical variables
   add_p(pvalue_fun = ~ style_pvalue(.x, digits = 2)) %>% #number of digits displayed for p-values
-  modify_caption("Table 1. Lizard and Habitat Characteristics") %>%
+  modify_caption("Table 1. *Draco bimaculatus* Morphological Characteristics") %>%
   #modify_header(update = all_stat_cols() ~ "**{level}**") %>% #headers to only contain name of sex
   modify_header(
     update = list(
       label ~ '',
-      stat_1 ~ '**Female**',
+      stat_1 ~ '**Female**', #is markdown **bold** formatting
       stat_2 ~ '**Male**',
       p.value ~ '**P-value**')
   )
@@ -65,18 +64,24 @@ table_Draco2
 ```{r modify table}
 #remove sample size report (N) and superscripts
 table_Draco2 <- table_Draco2 %>%
-  modify_header(label = '**Attribute**',
-  stat_1 = '**Female**',
-  stat_2 = '**Male**',
-  p.value = '**p-value**') %>%
+  modify_header(label = 'Measurement',
+  stat_1 = 'Female',
+  stat_2 = 'Male',
+  statistic ~'t-value',
+  p.value = 'p-value') %>%
   modify_footnote(everything() ~ NA) %>% #gets rid of superscripts and footnotes; put them in table caption.
-  modify_caption("") #blank caption above table
+  modify_caption("") %>% #blank caption above table
+  modify_fmt_fun(statistic ~ style_sigfig)
 
 table_Draco2
 #now you have a very clean table; most journals do not permit superscripts in tables.
 #Can put details of statistical tests in Table caption
 #after exporting to word processing program.
+```
 
-#post-hoc comparisons among groups not supported currently in gtsummary; might be able to do that manually in gt
+```{r export morph table to docx via flextable}
+table_Draco2 %>%
+  as_flex_table() %>%
+  flextable::save_as_docx(path = "Figs/Table_ttest_flextable.docx")
 ```
 
