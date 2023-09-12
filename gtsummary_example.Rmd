@@ -22,25 +22,34 @@ draco_ecomorph1 <- read_csv("draco_ecomorph.csv")
 table_Draco1 <- draco_ecomorph1 %>%
   select(species, sex, snout_vent_length_mm, perch_height_cm) %>% #retain variables used in summaries
   filter(species %in% c("bimaculatus", "cornutus", "melanopogon")) %>%
-  tbl_summary(by = species,
-              missing = "no", # remove missing values (NAs). "ifany" will include a missing values row in table.
-              digits = all_continuous() ~ 1, #number of displayed digits for continuous variables
-              label = list(snout_vent_length_mm ~ "SVL (mm)", #change column labels in table
-                           perch_height_cm ~ "Perch Height (cm)",
-                           sex ~ "Sex"),
-              statistic = list(all_continuous() ~ "{mean} ({sd})", #can use any character for parentheses
-                               all_categorical() ~ "{n}")) %>% #count obs. for categorical variables
+  tbl_summary(
+    by = species,
+    missing = "no",
+    # remove missing values (NAs). "ifany" will include a missing values row in table.
+    digits = all_continuous() ~ 1,
+    #number of displayed digits for continuous variables
+    label = list(
+      snout_vent_length_mm ~ "SVL (mm)",
+      #change column labels in table
+      perch_height_cm ~ "Perch Height (cm)",
+      sex ~ "Sex"
+    ),
+    statistic = list(all_continuous() ~ "{mean} ({sd})", #can use any character for parentheses
+                     all_categorical() ~ "{n}")
+  ) %>% #count obs. for categorical variables
   #add_p(snout_vent_length_mm ~ "aov") %>% CANT FIGURE OUT HOW TO FORCE ANOVA
-  add_p(pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% #number of digits displayed for p-values
+  add_p(pvalue_fun = ~ style_pvalue(.x, digits = 2)) %>% #number of digits displayed for p-values
   modify_caption("Table 1. Lizard and Habitat Characteristics") %>%
   #modify_header(update = all_stat_cols() ~ "**{level}**") %>% #headers to only contain species name
-  modify_header(update = list(
-  label ~ '',
-  stat_1 ~ '**D. bimaculatus**',
-  stat_2 ~ '**D. cornutus**',
-  stat_3 ~ '**D. melanopogon**',
-  p.value ~ '**P-value**'
-))
+  modify_header(
+    update = list(
+      label ~ '',
+      stat_1 ~ '**D. bimaculatus**',
+      stat_2 ~ '**D. cornutus**',
+      stat_3 ~ '**D. melanopogon**',
+      p.value ~ '**P-value**'
+    )
+  )
 
 #show_header_names(table_Draco) 
 #lets you preview code for changing header names and formatting  
