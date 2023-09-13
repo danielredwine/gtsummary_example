@@ -15,11 +15,11 @@ theme_gtsummary_mean_sd()  #https://www.danieldsjoberg.com/gtsummary/reference/t
 tbl_summary(trial, by = trt) %>%
   add_p(age ~ "t.test", test.args = age ~ list(var.equal = FALSE)) #uses Welch's unequal variance t-test
 ```
+
 ```{r ANOVA}
 tbl_summary(trial, by = trt) %>%
   add_p(age ~ "aov") #see example above using t.test to compare two groups (more appropriate)
 ```
-
 
 ```{r iris ANOVA}
 tbl_summary(iris, by = Species) %>%

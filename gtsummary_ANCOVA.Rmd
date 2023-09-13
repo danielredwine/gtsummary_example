@@ -1,0 +1,54 @@
+---
+title: "gtsummary ANCOVA"
+author: "CM Gienger"
+date: "2023-09-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r data import and filter, message=FALSE, warning=FALSE}
+draco_ecomorph1 <- read_csv("draco_ecomorph.csv")
+
+draco_ecomorph1 <- draco_ecomorph1 %>%
+  filter(species == "bimaculatus") #get one species to work with
+```
+
+```{r set builtin theme}
+theme_gtsummary_mean_sd(set_theme = TRUE)
+#Sets default summary statistics to mean and standard deviation in tbl_summary()
+#Sets default continuous tests in add_p() to t-test and ANOVA
+```
+
+```{r}
+#Example2---------------------------------
+#ANCOVA measurements adjusted for SVL covariate
+
+ex2 <- draco_ecomorph1%>% 
+  select(tail_length_mm, snout_vent_length_mm, fore_limb_length_mm, hind_limb_length_mm, sex)%>%
+  tbl_summary(by=sex, 
+              #statistic=list(all_continuous()~"{mean}({sd})"), 
+              missing="no",
+              digits = all_continuous() ~ 1,
+              include=c(tail_length_mm, fore_limb_length_mm, hind_limb_length_mm),
+              )%>%
+  #add_n() %>%
+  add_difference(adj.vars=c(snout_vent_length_mm))
+
+ex2
+```
+
+No matter what I do I can see to change sig figs on P-value; cannot use addp function either.
+
+```{r see if gtsummary results match a generic GLM}
+model_1 <- lm(tail_length_mm~snout_vent_length_mm+sex, data=draco_ecomorph1)
+summary(model_1)
+```
+For tail length, the adjusted difference and P-value matches `gtsummary` output.
+```{r}
+summary(model_1)$coefficients["sexmale","Estimate"] #adjusted difference between marginal means
+summary(model_1)$coefficients["sexmale","Pr(>|t|)"] #p-value comparing adjusted means
+```
+
