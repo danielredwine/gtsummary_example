@@ -43,8 +43,8 @@ ex2
 ```{r SVL t-test}
 #if you include SVL variable in the list to be analyzed by gtsummary, it does a t-test on SVL, not ANCOVA
 t.test(snout_vent_length_mm~sex, data=draco_ecomorph1)
-#SVL excluded from table above; if you wanted to include it, you would need to explain the table
-#in more depth because it has both a single t-test and a bunch on ANCOVAs
+#SVL variable is excluded from table above; if you wanted to include it, you would need to explain the table
+#in more depth because it has both a single t-test for SVL and a bunch on ANCOVAs for the other variables.
 ```
 
 
