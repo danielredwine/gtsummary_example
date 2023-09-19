@@ -15,6 +15,9 @@ library(flextable)
 
 ```{r run scripts, include=FALSE}
 source("../scripts/theme_cmg.R", local = knitr::knit_global())
+# this code runs a script that is in the repository
+# This can be used to change to your ggplot theme etc
+# .. indicates jumping up one level from this folder, the rest shows the file path
 ```
 
 Lets peek at the documentation for `gtsummary`
@@ -25,7 +28,9 @@ It is very common (especially in biomedical literature) for the first table of t
 
 ```{r Table 1 type example from documentation}
 tbl_summary(trial, by = trt) 
-  #uses all variables in a given table, so table should be relatively clean before summarizing
+# uses all variables in a given table, so table should be relatively clean before summarizing
+# Own syntax, really likes lists
+# More control over tables, probably the best for something like a thesis. 
 ```
 
 **Example 1 t-test: Summarizing/Comparing Two Groups**
@@ -62,33 +67,34 @@ table_Draco1 <- draco_ecomorph %>%
   select(sex, snout_vent_length_mm, tail_length_mm, fore_limb_length_mm, fore_toe_length_mm, perch_height_cm) %>% 
   #retain specific variables used in summaries rather than using all
   tbl_summary(
-    by = sex,
+    by = sex, # Creates the columns by sex
     missing = "no",
     # remove missing values (NAs). "ifany" will include a missing values row in table.
-    digits = all_continuous() ~ 1,
-    #number of displayed digits for continuous variables
+    digits = all_continuous() ~ 1, 
+    #number of displayed digits for continuous variables, one significant digit
     label = list(
       snout_vent_length_mm ~ "SVL (mm)",
       tail_length_mm ~ "Tail Length (mm)",
       fore_limb_length_mm ~ "Forelimb Length (mm)",
       fore_toe_length_mm ~ "Foretoe Length (mm)",
       perch_height_cm ~ "Perch Height (cm)"
-    ),
+    ), # labels including units, making it look pretty 
     statistic = list(all_continuous() ~ "{mean} ({sd})", #can use any character for parentheses
                      all_categorical() ~ "{n}") #count obs. for categorical variables
   ) %>% 
   add_p(pvalue_fun = ~ style_pvalue(.x, digits = 2)) %>% #number of digits displayed for p-values
-  modify_caption("Table 1. *Draco bimaculatus* Morphological Characteristics") %>%
+  modify_caption("Table 1. *Draco bimaculatus* Morphological Characteristics") %>% # Adding a table header
   modify_header(
     update = list(
       label ~ '',
-      stat_1 ~ '**Female**', #is markdown **bold** formatting
-      stat_2 ~ '**Male**',
+      stat_1 ~ '**Female**', #is markdown **bold** formatting, markdown is default formatting for this
+      stat_2 ~ '**Male**', # **Bold**, *italics*, may also be able to use underscores 
       p.value ~ '**P-value**')
   )
 
 #show_header_names(table_Draco) 
 #lets you preview code for changing header names and formatting  
+# Note, every journal has different formatting rules, make sure your table compllies 
                 
 table_Draco1
 ```
@@ -119,10 +125,11 @@ table_Draco2 <- draco_ecomorph %>%
   ) %>% #count obs. for categorical variables
   #add_p(snout_vent_length_mm ~ "aov") %>% CANT FIGURE OUT HOW TO FORCE ANOVA
   add_p(pvalue_fun = ~ style_pvalue(.x, digits = 2)) %>% #number of digits displayed for p-values
+  # pvalue_fun sets the function for the p value 
   modify_caption("Table 2. Lizard and Habitat Characteristics") %>%
   #modify_header(update = all_stat_cols() ~ "**{level}**") %>%  #headers to only contain species name
   #modify_footnote(all_stat_cols() ~ NA) %>% #squashes superscripts for the groups
-  modify_footnote(everything() ~ NA) %>%
+  modify_footnote(everything() ~ NA) %>% # this is how you remove the stuff that pops up at the bottom, sub/superscript
   modify_header(
     update = list(
       label ~ '',
@@ -143,6 +150,7 @@ table_Draco2
 table_Draco2 %>%
   as_flex_table() %>%
   flextable::save_as_docx(path = "../figs/table_Draco2.docx")
+# COnverted this to a flex table which allows it to be saved as a docx
 ```
 
 ```{r save Draco table}
@@ -197,6 +205,7 @@ draco_bimaculatus <- draco_ecomorph %>%
 
 ```{r ANCOVA table, message=FALSE, warning=FALSE}
 #ANCOVA measurements adjusted for SVL covariate
+#categorical and continous predictor 
 
 ex4 <- draco_bimaculatus%>% 
   select(tail_length_mm, snout_vent_length_mm, fore_limb_length_mm, hind_limb_length_mm, sex)%>%
@@ -208,6 +217,7 @@ ex4 <- draco_bimaculatus%>%
               )%>%
   add_difference(adj.vars=c(snout_vent_length_mm)) #this one line turns it from an ANOVA to an ANCOVA table (magic)
   #add_p(pvalue_fun = ~ style_pvalue(.x, digits = 2))   #cannot get to work; throws error
+# some journals could want test statistic included 
 
 ex4
 ```
@@ -215,7 +225,7 @@ ex4
 ```{r export ex4 table to docx via flextable}
 ex4 %>%
   as_flex_table() %>%
-  flextable::save_as_docx(path = "../figs/ex4_flextable.docx")
+  flextable::save_as_docx(path = "../figs/ex4_flextable.docx") #saving the next table as a docx
 ```
 
 ```{r SVL t-test}
