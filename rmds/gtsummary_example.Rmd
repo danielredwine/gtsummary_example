@@ -19,7 +19,7 @@ It is very common (especially in biomedical literature) for the first table of t
 
 ```{r Table 1 type example from documentation}
 tbl_summary(trial, by = trt) 
-  #uses all variables in a given table, so table should be relatively clean
+  #uses all variables in a given table, so table should be relatively clean before summarizing
 ```
 
 **Example 1 t-test: Summarizing/Comparing Two Groups**
@@ -220,11 +220,23 @@ t.test(snout_vent_length_mm~sex, data=draco_bimaculatus)
 SVL variable (snout_vent_length_mm) is excluded from table above; if you wanted to include it, you would need to explain the table in more depth because it has both a single t-test for SVL (raw means) and a bunch on ANCOVAs for the other variables (presenting marginal means).
 
 ```{r see if gtsummary results match a generic GLM}
-model_1 <- lm(tail_length_mm~snout_vent_length_mm+sex, data=draco_bimaculatus)
+model_1 <- lm(tail_length_mm ~ snout_vent_length_mm + sex, data=draco_bimaculatus)
+#notice this is a parallel slopes model (How can you tell?)
 summary(model_1)
 ```
 
-For tail length, the adjusted difference and P-value matches `gtsummary` output.
+```{r ANCOVA plot, message=FALSE, warning=FALSE}
+#make ANCOVA from a fit model; one of many ways to do this.
+results <- fortify(model_1)
+ggplot(model_1) +
+  geom_point(aes(x = snout_vent_length_mm, y = tail_length_mm, color = sex)) +
+  geom_line(aes(x = snout_vent_length_mm, y = .fitted, color = sex)) +
+  geom_vline(xintercept=mean(draco_bimaculatus$snout_vent_length_mm), linetype='dashed', color='blue', size=0.5)
+```
+
+For tail length, the adjusted difference and P-value matches `gtsummary` output. There is not a noticeable difference in tail length between the sexes at the grand mean.
+
+Notice also the technique for plotting an ANCOVA model using `fortify`. Open the `results` dataframe to see what a fortified dataset looks like; applies model calculations to the original dataset.
 
 ```{r}
 summary(model_1)$coefficients["sexmale","Estimate"] #adjusted difference between marginal means
