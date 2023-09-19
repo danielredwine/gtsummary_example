@@ -1,5 +1,5 @@
 ---
-title: "gtsummary"
+title: "gtsummary: Making Summary Tables for Publications"
 output:
   html_document:
     df_print: paged
@@ -32,11 +32,11 @@ tbl_summary(trial, by = trt)
 
 ```{r data import, message=FALSE, warning=FALSE}
 draco_ecomorph <- read_csv("../data/draco_ecomorph.csv")
-##..means look up one level for the 'data'folder
+##..means look up one level for the 'data' folder
 ```
 
 ```{r basic summary}
-# summarize the data; includes all species, so not that helpful yet
+# summarize the data; summary includes all species, so not that helpful yet
 table1 <- 
   draco_ecomorph %>%
   tbl_summary(by=sex,
@@ -46,7 +46,7 @@ table1 <-
 table1
 ```
 
-Note that the default here is median and IQR for summary statistics; not what we might want. You can change the defaults behavior by setting a theme, or define manually (I prefer for complete control). Its more customary to use mean and SD (or SE) to summarize groups since we are most likely going to use parametric statistics for comparison.
+Note that the default here is median and IQR for summary statistics; not what we might want. You can change the default behavior by setting a theme, or define manually (I prefer manually for complete control). Its more customary to use mean and SD (or SE) to summarize groups since we are most likely going to use parametric statistics for comparison.
 
 ```{r set builtin theme}
 theme_gtsummary_mean_sd(set_theme = TRUE)
@@ -75,8 +75,8 @@ table_Draco1 <- draco_ecomorph %>%
       perch_height_cm ~ "Perch Height (cm)"
     ),
     statistic = list(all_continuous() ~ "{mean} ({sd})", #can use any character for parentheses
-                     all_categorical() ~ "{n}")
-  ) %>% #count obs. for categorical variables
+                     all_categorical() ~ "{n}") #count obs. for categorical variables
+  ) %>% 
   add_p(pvalue_fun = ~ style_pvalue(.x, digits = 2)) %>% #number of digits displayed for p-values
   modify_caption("Table 1. *Draco bimaculatus* Morphological Characteristics") %>%
   modify_header(
@@ -206,7 +206,7 @@ ex4 <- draco_bimaculatus%>%
               digits = all_continuous() ~ 1,
               include=c(tail_length_mm, fore_limb_length_mm, hind_limb_length_mm),
               )%>%
-  add_difference(adj.vars=c(snout_vent_length_mm)) #this one line turns it from an ANOVA to an ANCOVA table
+  add_difference(adj.vars=c(snout_vent_length_mm)) #this one line turns it from an ANOVA to an ANCOVA table (magic)
   #add_p(pvalue_fun = ~ style_pvalue(.x, digits = 2))   #cannot get to work; throws error
 
 ex4
@@ -225,7 +225,7 @@ t.test(snout_vent_length_mm~sex, data=draco_bimaculatus)
 
 SVL variable (snout_vent_length_mm) is excluded from table above; if you wanted to include it, you would need to explain the table in more depth because it has both a single t-test for SVL (raw means) and a bunch on ANCOVAs for the other variables (presenting marginal means).
 
-```{r see if gtsummary results match a generic GLM}
+```{r see if gtsummary results match a generic GLM result}
 model_1 <- lm(tail_length_mm ~ snout_vent_length_mm + sex, data=draco_bimaculatus)
 #notice this is a parallel slopes model (How can you tell?)
 summary(model_1)
@@ -245,7 +245,7 @@ For tail length, the adjusted difference and P-value matches `gtsummary` output.
 
 Notice also the technique for plotting an ANCOVA model using `fortify`. Open the `results` dataframe to see what a fortified dataset looks like; applies model calculations to the original dataset.
 
-```{r}
+```{r check model coefficients}
 summary(model_1)$coefficients["sexmale","Estimate"] #adjusted difference between marginal means
 summary(model_1)$coefficients["sexmale","Pr(>|t|)"] #p-value comparing adjusted means
 ```
