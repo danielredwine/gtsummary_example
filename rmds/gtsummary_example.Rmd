@@ -13,17 +13,18 @@ library(palmerpenguins)
 **Example 1**
 
 ```{r data import, message=FALSE, warning=FALSE}
-draco_ecomorph1 <- read_csv("draco_ecomorph.csv")
+draco_ecomorph <- read_csv("../data/draco_ecomorph.csv")
 ```
 
 ```{r example 1 make the table}
 #this function works best with datasets without NA values
 
-table_Draco1 <- draco_ecomorph1 %>%
+table_Draco1 <- draco_ecomorph %>%
   select(species, sex, snout_vent_length_mm, perch_height_cm) %>% #retain variables used in summaries
   filter(species %in% c("bimaculatus", "cornutus", "melanopogon")) %>%
   tbl_summary(
     by = species,
+    #every species gets its own column and summary stats
     missing = "no",
     # remove missing values (NAs). "ifany" will include a missing values row in table.
     digits = all_continuous() ~ 1,

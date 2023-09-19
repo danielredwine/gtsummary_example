@@ -14,7 +14,7 @@ library(Rmisc)
 library(tidyverse)
 library(flextable)
 
-data <- read_csv("Shelter Attributes.csv")
+data <- read_csv("../data/shelter_attributes.csv")
 ```
 
 ```{r select variables}
@@ -60,7 +60,6 @@ table1
 show_header_names(table1)
 ```
 
-
 ```{r modify table}
 #remove sample size report (N) and superscripts
 table1 <- table1 %>%
@@ -69,7 +68,7 @@ table1 <- table1 %>%
   stat_2 = '**Potential**',
   stat_3 = '**Random**',
   p.value = '**p-value**') %>%
-  modify_footnote(everything() ~ NA) #gets rid of superscripts and footnotes; put them in table caption.
+  modify_footnote(everything() ~ NA) #gets rid of superscripts and footnotes; put them in table caption instead.
 
 table1
 #now you have a very clean table; most journals do not permit superscripts in tables.
@@ -88,14 +87,14 @@ table1
 ```
 
 ```{r export table to rtf}
-table1 %>% 
-  as_gt() %>%
-  gt::gtsave("Figs/tab_1.rtf")
+#table1 %>% 
+  #as_gt() %>%
+  #gt::gtsave("figs/tab_1.rtf")
 ##works but ugly as sin
 ```
 
 ```{r export table to docx via flextable}
 table1 %>%
   as_flex_table() %>%
-  flextable::save_as_docx(path = "Figs/Table1_flextable.docx")
+  flextable::save_as_docx(path = "../figs/table1_flextable.docx")
 ```
