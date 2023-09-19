@@ -1,5 +1,5 @@
 ---
-title: "Table 1 using gtsummary"
+title: "Table 1 type Summary of Gila Monster Refuge Sites"
 author: "CM Gienger"
 date: "`r Sys.Date()`"
 output: html_document

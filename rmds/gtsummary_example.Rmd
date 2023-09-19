@@ -10,16 +10,88 @@ library(gtsummary)
 library(palmerpenguins)
 ```
 
-**Example 1**
+Lets peek at the documentation for `gtsummary`
+
+https://www.danieldsjoberg.com/gtsummary/
+
+It is very common (especially in biomedical literature) for the first table of the paper to summarize attributes of the participants in the study. This is a first look at whether the study could have some built-in demographic bias.
+
+```{r Table 1 type example from documentation}
+tbl_summary(trial, by = trt) 
+  #uses all variables in a given table, so table should be relatively clean
+```
+
+**Example 1 t-test: Summarizing/Comparing Two Groups**
 
 ```{r data import, message=FALSE, warning=FALSE}
 draco_ecomorph <- read_csv("../data/draco_ecomorph.csv")
+##..means look up one level for the 'data'folder
 ```
+
+```{r basic summary}
+# summarize the data; includes all species, so not that helpful yet
+table1 <- 
+  draco_ecomorph %>%
+  tbl_summary(by=sex,
+              missing = "no", #gets rid of pesky NAs
+              include = c(snout_vent_length_mm, tail_length_mm, fore_limb_length_mm))
+
+table1
+```
+
+Note that the default here is median and IQR for summary statistics; not what we might want. You can change the defaults behavior by setting a theme, or define manually (I prefer for complete control). Its more customary to use mean and SD (or SE) since we are most likely going to use parametric statistics for comparison.
+
+```{r set builtin theme}
+theme_gtsummary_mean_sd(set_theme = TRUE)
+#Sets default summary statistics to mean and standard deviation in tbl_summary()
+#Sets default continuous tests in add_p() to t-test and ANOVA
+```
+
+```{r t-test example make the table, message=FALSE, warning=FALSE}
+#gtsummary works best with datasets without NA values, otherwise it attempts to report # of NAs (annoying)
+
+table_Draco1 <- draco_ecomorph %>%
+  filter(species =="bimaculatus") %>%
+  select(sex, snout_vent_length_mm, tail_length_mm, fore_limb_length_mm, fore_toe_length_mm, perch_height_cm) %>% 
+  #retain specific variables used in summaries rather than using all
+  tbl_summary(
+    by = sex,
+    missing = "no",
+    # remove missing values (NAs). "ifany" will include a missing values row in table.
+    digits = all_continuous() ~ 1,
+    #number of displayed digits for continuous variables
+    label = list(
+      snout_vent_length_mm ~ "SVL (mm)",
+      tail_length_mm ~ "Tail Length (mm)",
+      fore_limb_length_mm ~ "Forelimb Length (mm)",
+      fore_toe_length_mm ~ "Foretoe Length (mm)",
+      perch_height_cm ~ "Perch Height (cm)"
+    ),
+    statistic = list(all_continuous() ~ "{mean} ({sd})", #can use any character for parentheses
+                     all_categorical() ~ "{n}")
+  ) %>% #count obs. for categorical variables
+  add_p(pvalue_fun = ~ style_pvalue(.x, digits = 2)) %>% #number of digits displayed for p-values
+  modify_caption("Table 1. *Draco bimaculatus* Morphological Characteristics") %>%
+  modify_header(
+    update = list(
+      label ~ '',
+      stat_1 ~ '**Female**', #is markdown **bold** formatting
+      stat_2 ~ '**Male**',
+      p.value ~ '**P-value**')
+  )
+
+#show_header_names(table_Draco) 
+#lets you preview code for changing header names and formatting  
+                
+table_Draco1
+```
+
+**Example 2 ANOVA Lizards: Summarizing/Comparing Three Groups**
 
 ```{r example 1 make the table}
 #this function works best with datasets without NA values
 
-table_Draco1 <- draco_ecomorph %>%
+table_Draco2 <- draco_ecomorph %>%
   select(species, sex, snout_vent_length_mm, perch_height_cm) %>% #retain variables used in summaries
   filter(species %in% c("bimaculatus", "cornutus", "melanopogon")) %>%
   tbl_summary(
@@ -40,8 +112,10 @@ table_Draco1 <- draco_ecomorph %>%
   ) %>% #count obs. for categorical variables
   #add_p(snout_vent_length_mm ~ "aov") %>% CANT FIGURE OUT HOW TO FORCE ANOVA
   add_p(pvalue_fun = ~ style_pvalue(.x, digits = 2)) %>% #number of digits displayed for p-values
-  modify_caption("Table 1. Lizard and Habitat Characteristics") %>%
-  #modify_header(update = all_stat_cols() ~ "**{level}**") %>% #headers to only contain species name
+  modify_caption("Table 2. Lizard and Habitat Characteristics") %>%
+  #modify_header(update = all_stat_cols() ~ "**{level}**") %>%  #headers to only contain species name
+  #modify_footnote(all_stat_cols() ~ NA) %>% #squashes superscripts for the groups
+  modify_footnote(everything() ~ NA) %>%
   modify_header(
     update = list(
       label ~ '',
@@ -52,14 +126,20 @@ table_Draco1 <- draco_ecomorph %>%
     )
   )
 
-#show_header_names(table_Draco) 
+#show_header_names(table_Draco1) 
 #lets you preview code for changing header names and formatting  
                 
-table_Draco1
+table_Draco2
+```
+
+```{r export table_Draco2 to docx via flextable}
+table_Draco2 %>%
+  as_flex_table() %>%
+  flextable::save_as_docx(path = "../figs/table_Draco2.docx")
 ```
 
 ```{r save Draco table}
-#table_Draco1 %>% 
+#table_Draco2 %>% 
   #as_gt() %>%   # convert to gt table for additional formatting options and saving
   #gt::gtsave(filename = "draco_ecomorph_table.pdf") #save file
 ```
@@ -68,15 +148,15 @@ Parts of a gt table: https://gt.rstudio.com/articles/intro-creating-gt-tables.ht
 
 Advanced Customization
 
-It's natural a {gtsummary} package user would want to customize the aesthetics of the table with one or more of the many {gt} functions available.
+It's natural a `gtsummary` user would want to customize the aesthetics of the table with one or more of the many `gt` functions available.
 
-Every function in {gt} is available to use with a {gtsummary} object.
+Every function in `gt` is available to use with a {gtsummary} object.
 
-1. Create a {gtsummary} table.
-2. Convert the table to a {gt} object with the as_gt() function.
-3. Continue formatting as a {gt} table with any {gt} function.
+1. Create a `gtsummary` table.
+2. Convert the table to a `gt` object with the `as_gt()` function.
+3. Continue formatting as a `gt` table with any `gt` function.
 
-**Example 2**
+**Example 3 ANOVA Penguins**
 
 ```{r palmer penguins data}
 table_penguins <- penguins %>%
@@ -92,14 +172,62 @@ table_penguins <- penguins %>%
               statistic = list(all_continuous() ~ "{mean} ({sd})", #can use any character for parentheses
                                all_categorical() ~ "{n}")) %>% #count obs. for categorical variables
   add_p(pvalue_fun = ~style_pvalue(.x, digits = 2)) %>% #number of digits displayed for p-values
-  modify_caption("Table 2. Palmer Penguin Morphometrics") %>%
+  modify_caption("Table 3. Palmer Penguin Morphometrics") %>%
   modify_header(update = all_stat_cols() ~ "**{level}**") %>% #headers to only contain species name
   as_gt() %>% #have to convert to gt object for some types of formatting
-  gt::tab_options(heading.align = "left") #can't get to work; most journals want table caption separate anyway
-#table caption appears left aligned after it is knit to html.
+  gt::tab_options(heading.align = "left")
+#table caption appears left aligned AFTER it is knit to html.
 
 table_penguins
 ```
+
+**Example 4 ANCOVA Lizards**
+
+```{r data import and filter, message=FALSE, warning=FALSE}
+draco_bimaculatus <- draco_ecomorph %>%
+  filter(species == "bimaculatus") #get one species to work with
+```
+
+```{r ANCOVA table, message=FALSE, warning=FALSE}
+#ANCOVA measurements adjusted for SVL covariate
+
+ex4 <- draco_bimaculatus%>% 
+  select(tail_length_mm, snout_vent_length_mm, fore_limb_length_mm, hind_limb_length_mm, sex)%>%
+  tbl_summary(by=sex, 
+              #statistic=list(all_continuous()~"{mean}({sd})"), 
+              #missing="no",
+              digits = all_continuous() ~ 1,
+              include=c(tail_length_mm, fore_limb_length_mm, hind_limb_length_mm),
+              )%>%
+  add_difference(adj.vars=c(snout_vent_length_mm)) #this one line turns it from an ANOVA to an ANCOVA table
+  #add_p(pvalue_fun = ~ style_pvalue(.x, digits = 2))   #cannot get to work; throws error
+
+ex4
+```
+
+```{r export ex4 table to docx via flextable}
+ex4 %>%
+  as_flex_table() %>%
+  flextable::save_as_docx(path = "../figs/ex4_flextable.docx")
+```
+
+```{r SVL t-test}
+#if you include SVL as a variable in the list to be analyzed by gtsummary, it does a t-test on SVL, not ANCOVA
+t.test(snout_vent_length_mm~sex, data=draco_bimaculatus)
+#SVL variable is excluded from table above; if you wanted to include it, you would need to explain the table
+#in more depth because it has both a single t-test for SVL and a bunch on ANCOVAs for the other variables.
+```
+
+```{r see if gtsummary results match a generic GLM}
+model_1 <- lm(tail_length_mm~snout_vent_length_mm+sex, data=draco_bimaculatus)
+summary(model_1)
+```
+For tail length, the adjusted difference and P-value matches `gtsummary` output.
+```{r}
+summary(model_1)$coefficients["sexmale","Estimate"] #adjusted difference between marginal means
+summary(model_1)$coefficients["sexmale","Pr(>|t|)"] #p-value comparing adjusted means
+```
+
 If more formatting is required, likely have to convert `gtsummary` object to a `gt` object and modify with `gt` package.
 
 Other worked examples:
