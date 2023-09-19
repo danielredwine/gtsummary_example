@@ -8,12 +8,13 @@ output:
 ```{r setup, warning = FALSE, message = FALSE}
 library(tidyverse)
 library(gtsummary)
+library(gt)
 library(palmerpenguins)
+library(flextable)
 ```
 
-```{r, include=FALSE}
-source("scripts/theme_cmg.R", local = knitr::knit_global())
-#sys.source("scripts/theme_cmg.R", envir = knitr::knit_global())
+```{r run scripts, include=FALSE}
+source("../scripts/theme_cmg.R", local = knitr::knit_global())
 ```
 
 Lets peek at the documentation for `gtsummary`
@@ -237,7 +238,7 @@ ggplot(model_1) +
   geom_point(aes(x = snout_vent_length_mm, y = tail_length_mm, color = sex)) +
   geom_line(aes(x = snout_vent_length_mm, y = .fitted, color = sex)) +
   geom_vline(xintercept=mean(draco_bimaculatus$snout_vent_length_mm), linetype='dashed', color='blue', size=0.5) +
-  theme_classic()
+  theme_cmg() #this was my theme defined in a script
 ```
 
 For tail length, the adjusted difference and P-value matches `gtsummary` output. There is not a noticeable difference in tail length between the sexes at the grand mean.

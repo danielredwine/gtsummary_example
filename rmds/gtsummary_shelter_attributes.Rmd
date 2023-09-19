@@ -32,7 +32,7 @@ data_summary2 %>%
 ```
 
 ```{r second summary}
-#sometimes you have to force continuous variables into the proper format
+#sometimes you have to force continuous variables into the proper format; R might think they represent categories
 #https://stackoverflow.com/questions/67388749/r-tbl-summary-treating-continuous-variables-correctly
 
 table1 <- 
@@ -56,7 +56,7 @@ table1 <-
 table1
 ```
 
-```{r show current values of the header}
+```{r show current values of the header, message=FALSE, warning=FALSE}
 show_header_names(table1)
 ```
 
