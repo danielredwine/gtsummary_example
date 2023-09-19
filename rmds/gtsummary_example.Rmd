@@ -4,6 +4,7 @@ output:
   html_document:
     df_print: paged
 ---
+
 ```{r setup, warning = FALSE, message = FALSE}
 library(tidyverse)
 library(gtsummary)
@@ -12,7 +13,7 @@ library(palmerpenguins)
 
 Lets peek at the documentation for `gtsummary`
 
-https://www.danieldsjoberg.com/gtsummary/
+<https://www.danieldsjoberg.com/gtsummary/>
 
 It is very common (especially in biomedical literature) for the first table of the paper to summarize attributes of the participants in the study. This is a first look at whether the study could have some built-in demographic bias.
 
@@ -39,7 +40,7 @@ table1 <-
 table1
 ```
 
-Note that the default here is median and IQR for summary statistics; not what we might want. You can change the defaults behavior by setting a theme, or define manually (I prefer for complete control). Its more customary to use mean and SD (or SE) since we are most likely going to use parametric statistics for comparison.
+Note that the default here is median and IQR for summary statistics; not what we might want. You can change the defaults behavior by setting a theme, or define manually (I prefer for complete control). Its more customary to use mean and SD (or SE) to summarize groups since we are most likely going to use parametric statistics for comparison.
 
 ```{r set builtin theme}
 theme_gtsummary_mean_sd(set_theme = TRUE)
@@ -143,8 +144,8 @@ table_Draco2 %>%
   #as_gt() %>%   # convert to gt table for additional formatting options and saving
   #gt::gtsave(filename = "draco_ecomorph_table.pdf") #save file
 ```
-If data have missing values that make groups unbalanced, might have to make more than one table and combine them.
-Parts of a gt table: https://gt.rstudio.com/articles/intro-creating-gt-tables.html
+
+If data have missing values that make groups unbalanced, might have to make more than one table and combine them. Parts of a gt table: <https://gt.rstudio.com/articles/intro-creating-gt-tables.html>
 
 Advanced Customization
 
@@ -152,9 +153,9 @@ It's natural a `gtsummary` user would want to customize the aesthetics of the ta
 
 Every function in `gt` is available to use with a {gtsummary} object.
 
-1. Create a `gtsummary` table.
-2. Convert the table to a `gt` object with the `as_gt()` function.
-3. Continue formatting as a `gt` table with any `gt` function.
+1.  Create a `gtsummary` table.
+2.  Convert the table to a `gt` object with the `as_gt()` function.
+3.  Continue formatting as a `gt` table with any `gt` function.
 
 **Example 3 ANOVA Penguins**
 
@@ -214,15 +215,17 @@ ex4 %>%
 ```{r SVL t-test}
 #if you include SVL as a variable in the list to be analyzed by gtsummary, it does a t-test on SVL, not ANCOVA
 t.test(snout_vent_length_mm~sex, data=draco_bimaculatus)
-#SVL variable is excluded from table above; if you wanted to include it, you would need to explain the table
-#in more depth because it has both a single t-test for SVL and a bunch on ANCOVAs for the other variables.
 ```
+
+SVL variable (snout_vent_length_mm) is excluded from table above; if you wanted to include it, you would need to explain the table in more depth because it has both a single t-test for SVL (raw means) and a bunch on ANCOVAs for the other variables (presenting marginal means).
 
 ```{r see if gtsummary results match a generic GLM}
 model_1 <- lm(tail_length_mm~snout_vent_length_mm+sex, data=draco_bimaculatus)
 summary(model_1)
 ```
+
 For tail length, the adjusted difference and P-value matches `gtsummary` output.
+
 ```{r}
 summary(model_1)$coefficients["sexmale","Estimate"] #adjusted difference between marginal means
 summary(model_1)$coefficients["sexmale","Pr(>|t|)"] #p-value comparing adjusted means
@@ -232,8 +235,6 @@ If more formatting is required, likely have to convert `gtsummary` object to a `
 
 Other worked examples:
 
-https://cran.r-project.org/web/packages/gtsummary/vignettes/gallery.html
+<https://cran.r-project.org/web/packages/gtsummary/vignettes/gallery.html>
 
-https://www.pipinghotdata.com/posts/2021-07-14-polished-summary-tables-in-r-with-gtsummary/
-
-
+<https://www.pipinghotdata.com/posts/2021-07-14-polished-summary-tables-in-r-with-gtsummary/>
